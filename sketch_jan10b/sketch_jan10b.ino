@@ -1,13 +1,27 @@
 #include <LiquidCrystal.h>
 LiquidCrystal lcd(7, 6, 5, 4, 3, 2);
-volatile int buttonVariable;
 
-char tableGame[3][3];
+char tableGame[4][4];
+int firstLine, secondLine;
 
 void reinitTable() {
   for (int i = 0; i < 2; ++i)
     for (int j = 0; j < 2; ++j)
       tableGame[i][j] = 0;
+}
+
+void tableTest() {
+  tableGame[0][0] = 'X';
+  tableGame[0][1] = 'O';
+  tableGame[0][2] = 'X';
+
+  tableGame[1][0] = 'O';
+  tableGame[1][1] = 'O';
+  tableGame[1][2] = 'X';
+
+  tableGame[2][0] = 'O';
+  tableGame[2][1] = 'O';
+  tableGame[2][2] = 'O';
 }
 
 bool checkValidValues(char a, char b, char c) {
@@ -25,7 +39,9 @@ bool checkGameState() {
 
 void setup() {
   lcd.begin(16, 2);
-  buttonVariable = 0;
+  tableTest();
+  firstLine = 0;
+  secondLine = 1;
 
   pinMode(19, INPUT);  // RESET
   pinMode(20, INPUT);  // UP
@@ -40,9 +56,12 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(21), moveDown, CHANGE);
 }
 
+void printLine() {
+  for(int i = 0; i < 3; ++i)
+       
+}
+
 void moveUp() {
-  lcd.clear();
-  lcd.setCursor(0, 0);
   lcd.print("UP");
 }
 
