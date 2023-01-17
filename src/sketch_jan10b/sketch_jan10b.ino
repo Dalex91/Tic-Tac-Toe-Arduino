@@ -33,10 +33,10 @@ bool equalChars(char a, char b, char c) {
 }
 
 bool isEndGame() {
-  bool stateGame = true;
+  bool stateGame = false;
   for (int i = 0; i < 2; ++i)
-    stateGame = stateGame && equalChars(tableGame[i][0], tableGame[i][1], tableGame[i][2]) && equalChars(tableGame[0][i], tableGame[1][i], tableGame[2][i]);
-  return stateGame && equalChars(tableGame[0][0], tableGame[1][1], tableGame[2][2]) && equalChars(tableGame[0][2], tableGame[1][1], tableGame[2][0]);
+    stateGame = stateGame || equalChars(tableGame[i][0], tableGame[i][1], tableGame[i][2]) || equalChars(tableGame[0][i], tableGame[1][i], tableGame[2][i]);
+  return stateGame || equalChars(tableGame[0][0], tableGame[1][1], tableGame[2][2]) || equalChars(tableGame[0][2], tableGame[1][1], tableGame[2][0]);
 }
 
 void setup() {
@@ -48,28 +48,28 @@ void setup() {
 
   lcd.begin(16, 2);
   firstLine = 0;
-  pinMode(24, INPUT);  // RESET
-  pinMode(25, INPUT);  // UP
-  pinMode(26, INPUT);  // DOWN
+  pinMode(19, INPUT);  // RESET
+  pinMode(20, INPUT);  // UP
+  pinMode(21, INPUT);  // DOWN
 
-  digitalWrite(24, HIGH);
-  digitalWrite(25, HIGH);
-  digitalWrite(26, HIGH);
+  digitalWrite(19, HIGH);
+  digitalWrite(20, HIGH);
+  digitalWrite(21, HIGH);
 
-  attachInterrupt(digitalPinToInterrupt(24), reset, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(25), moveUp, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(26), moveDown, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(19), reset, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(20), moveUp, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(21), moveDown, CHANGE);
   Serial.begin(9600);
   initTable();
 }
 
 void moveUp() {
-  Serial.print("UP");
+  //Serial.print("UP");
   firstLine = 0;
 }
 
 void moveDown() {
-  Serial.print("DOWN");
+  //Serial.print("DOWN");
   firstLine = 1;  
  }
 
@@ -103,10 +103,15 @@ char checkPlayerTurn() {
 
 void serialRead() {
   int lin = -1, col = -1;
-  if(Serial.available()) {
+  if(Serial.available() > 3) {
      int lin = Serial.read() - '0';
      Serial.read();
-     int col = Serial.read() - '0';     
+     int col = Serial.read() - '0';   
+     Serial.read();
+     Serial.print(lin);
+     Serial.print(" ");
+     Serial.print(col);
+     Serial.print("\n");  
      if(lin >= 0 && lin <= 2 || col >=0 && col <= 2) {
        tableGame[lin][col] = checkPlayerTurn();
      }          
@@ -132,6 +137,7 @@ void loop() {
       xScore++;
     else
       yScore++;
+    initTable();
   }
   printScore();
 }
